@@ -1,0 +1,37 @@
+#!/bin/bash
+NAME=tirev
+IMAGE=gcr.io/moonrhythm-containers/tirev
+TAG=1.1.0
+MOUNT_SOURCE=/mnt/disks/data/tirev
+MOUNT_TARGET=/data
+HOSTS=example.com,www.example.com
+UPSTREAM="app:8080"
+
+docker pull $IMAGE:$TAG
+docker stop $NAME-http
+docker rm $NAME-http
+docker run -d \
+  -e PORT=80 \
+  -e FRONT=true \
+  -e NO_HEALTHZ=true \
+  -e NO_PROM=true \
+  -e NO_REQID=true \
+  -e REDIRECT_HTTPS=true \
+  -e REDIRECT_WWW=non \
+  -e upstream_addr=$UPSTREAM \
+  --restart=always --name=$NAME-http $IMAGE:$TAG
+
+docker stop $NAME-https
+docker rm $NAME-https
+docker run -d \
+  -e PORT=443 \
+  -e FRONT=true \
+  -e NO_HEALTHZ=true \
+  -e NO_PROM=true \
+  -e NO_REQID=true \
+  -e HSTS=preload \
+  -e REDIRECT_WWW=non \
+  -e autocert_dir=/data \
+  -e autocert_hosts=$HOSTS \
+  -e upstream_addr=$UPSTREAM \
+  --restart=always --name=$NAME-https $IMAGE:$TAG
