@@ -18,7 +18,7 @@ docker run -d \
   -e NO_REQID=true \
   -e REDIRECT_HTTPS=true \
   -e REDIRECT_WWW=non \
-  -e upstream_addr=$UPSTREAM \
+  -e UPSTREAM_ADDR=$UPSTREAM \
   --restart=always --name=$NAME-http $IMAGE:$TAG
 
 docker stop $NAME-https
@@ -31,7 +31,7 @@ docker run -d \
   -e NO_REQID=true \
   -e HSTS=preload \
   -e REDIRECT_WWW=non \
-  -e autocert_dir=/data \
-  -e autocert_hosts=$HOSTS \
-  -e upstream_addr=$UPSTREAM \
+  -e AUTOCERT_DIR=/data \
+  -e AUTOCERT_HOSTS=$HOSTS \
+  -e UPSTREAM_ADDR=$UPSTREAM \
   --restart=always --name=$NAME-https $IMAGE:$TAG
